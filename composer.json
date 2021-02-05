@@ -1,6 +1,6 @@
 {
     "name": "koriym/null-object",
-    "description": "",
+    "description": "Null object generator",
     "license": "MIT",
     "authors": [
         {
@@ -18,7 +18,8 @@
     "autoload": {
         "psr-4": {
             "Koriym\\NullObject\\": "src/"
-        }
+        },
+        "files": ["autoloader.php"]
     },
     "autoload-dev": {
         "psr-4": {

@@ -5,20 +5,26 @@ declare(strict_types=1);
 namespace Koriym\NullObject;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 
 class NullObjectTest extends TestCase
 {
-    /** @var NullObject */
-    protected $nullObject;
-
-    protected function setUp(): void
+    public function testGenerateNullObject(): UserAddInterface
     {
-        $this->nullObject = new NullObject();
+        $nullClass = UserAddInterface::class . 'Null';
+        $nullObject = new $nullClass();
+        $this->assertInstanceOf(UserAddInterface::class, $nullObject);
+
+        return $nullObject;
     }
 
-    public function testGenerateNullObject(): void
+    /**
+     * @depends testGenerateNullObject
+     */
+    public function testNullObjectAttribute(UserAddInterface $userAdd): void
     {
-        $actual = ($this->nullObject)(UserAddInterface::class);
-        $this->assertInstanceOf(UserAddInterface::class, $actual);
+        $attrs = (new ReflectionMethod($userAdd, '__invoke'))->getAttributes();
+        $attr = $attrs[0]->newInstance();
+        $this->assertInstanceOf(DbPager::class, $attr);
     }
 }
