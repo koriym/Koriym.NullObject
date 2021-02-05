@@ -16,9 +16,9 @@ class NullObjectTest extends TestCase
         $this->nullObject = new NullObject();
     }
 
-    public function testIsInstanceOfNullObject(): void
+    public function testGenerateNullObject(): void
     {
-        $actual = $this->nullObject;
-        $this->assertInstanceOf(NullObject::class, $actual);
+        $actual = ($this->nullObject)(UserAddInterface::class);
+        $this->assertInstanceOf(UserAddInterface::class, $actual);
     }
 }
