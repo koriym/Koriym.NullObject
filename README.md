@@ -9,7 +9,10 @@ It was created for testing purposes and AOP.
 
 ## Usage
 
-    $nullObjectClass = $interface . 'Null' // add Null prefix to interface
+``php
+interface Foo{}
+``
+    $nullObjectClass = Foo::class . 'Null' // add Null prefix to interface
     $nullObject = new $nullObjectClass;
     assert($nullObject instanceof $interface);
 
