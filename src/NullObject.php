@@ -75,7 +75,9 @@ EOT;
             $methodMeta = $this->getMethodMeta($method);
             $params = $method->getParameters();
             $paramList = $this->getParamList($params);
-            $methodStrings[] = sprintf("%s\npublic function %s(%s): %s {}", $methodMeta, $method->getName(), $paramList, $method->getReturnType());
+            $returnType = $method->getReturnType()->getName();
+            $returnTypeRep = class_exists($returnType) ? '\\' . $returnType : $returnType;
+            $methodStrings[] = sprintf("%s\npublic function %s(%s): %s {}", $methodMeta, $method->getName(), $paramList, $returnTypeRep);
         }
 
         return implode(PHP_EOL, $methodStrings);
