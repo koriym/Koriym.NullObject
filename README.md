@@ -16,10 +16,10 @@ interface FooInterface
    public function do(): void;
 }
 
-$nullClass = FooInterface::class . 'Null' // Add Null postfix to the interface.
-$foo = new $nullClass;  // Instantiate a NullObject.
+$nullClass = FooInterface::class . 'Null' // add Null postfix to the interface
+$foo = new $nullClass;  // instantiate a NullObject
 assert($foo instanceof FooInterface);
-$foo->do(); // Nothing's going to happen.
+$foo->do(); // nothing's going to happen
 ```
 
 ## How it works
