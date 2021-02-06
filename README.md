@@ -6,7 +6,7 @@ It was created for testing and AOP.
 
 ## Installation
 
-    composer require koriym/null-object 1.x-dev
+    composer require --dev koriym/null-object 1.x-dev
 
 ## Usage
 
