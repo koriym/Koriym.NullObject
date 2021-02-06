@@ -11,10 +11,15 @@ It was created for testing and AOP.
 ## Usage
 
 ```php
-interface FooInterface{}
+interface FooInterface
+{
+   public function do(): void;
+}
 
-$nullClass = FooInterface::class . 'Null' // add Null postfix to the interface
-assert(new $nullClass instanceof FooInterface); // "new" instantiate a NullObject
+$nullClass = FooInterface::class . 'Null' // Add Null postfix to the interface.
+$foo = new $nullClass;  // Instantiate a NullObject.
+assert($foo instanceof FooInterface);
+$foo->do(); // Nothing's going to happen.
 ```
 
 ## How it works
