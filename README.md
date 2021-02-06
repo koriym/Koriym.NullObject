@@ -1,7 +1,8 @@
 # Koriym.NullObject
 
-Generate a NullObject class from the interface.
-It was created for testing purposes and AOP.
+Generates a NullObject from an interface.
+It was created for testing and AOP.
+
 
 ## Installation
 
@@ -9,12 +10,12 @@ It was created for testing purposes and AOP.
 
 ## Usage
 
-``php
-interface Foo{}
-``
-    $nullObjectClass = Foo::class . 'Null' // add Null prefix to interface
-    $nullObject = new $nullObjectClass;
-    assert($nullObject instanceof $interface);
+```php
+interface FooInterface{}
+
+$nullClass = FooInterface::class . 'Null' // add Null postfix to the interface
+assert(new $nullClass instanceof FooInterface); // "new" instantiate a NullObject
+```
 
 ## How it works
 
