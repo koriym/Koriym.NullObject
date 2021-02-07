@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionNamedType;
@@ -58,6 +59,7 @@ EOT;
             $file = $this->getNullFilePath($interface);
             file_put_contents($file, $class);
 
+            /** @psalm-suppress UnresolvableInclude */
             require $file;
         }
 
@@ -84,17 +86,20 @@ EOT;
 
     private function getMethodMeta(ReflectionMethod $method): string
     {
+        /** @var list<ReflectionAttribute> $attrs */
         $attrs = $method->getAttributes();
         $attrList = [];
         if ($attrs) {
             foreach ($attrs as $attr) {
+                /** @var array<float|int|string> $args */
                 $args = $attr->getArguments();
                 $argList = [];
+                /** @var mixed $arg */
                 foreach ($args as $arg) {
-                    $argList[] = is_string($arg) ? sprintf("'%s'", $arg) : $arg;
+                    $argList[] = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
                 }
 
-                $attrList[] = sprintf('#[\%s(%s)]', $attr->getName(), implode(', ', $argList));
+                $attrList[] = sprintf('#[\%s(%s)]', (string) $attr->getName(), implode(', ', $argList));
             }
         }
 
@@ -143,8 +148,8 @@ EOT;
             return '';
         }
 
-        $returnType = $method->getReturnType();
+        $returnType = (string) $method->getReturnType();
 
-        return ': ' . (class_exists((string) $returnType) ? '\\' . $returnType : $returnType);
+        return ': ' . (class_exists($returnType) ? '\\' . $returnType : $returnType);
     }
 }
