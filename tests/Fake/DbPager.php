@@ -7,7 +7,8 @@ use Attribute;
 #[Attribute]
 class DbPager
 {
-    public function __construct($id, $type)
+    public function __construct(string $id, string $type)
     {
+        unset($id, $type);
     }
 }

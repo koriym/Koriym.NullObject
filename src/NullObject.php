@@ -75,9 +75,8 @@ EOT;
             $methodMeta = $this->getMethodMeta($method);
             $params = $method->getParameters();
             $paramList = $this->getParamList($params);
-            $returnType = $method->getReturnType()->getName();
-            $returnTypeRep = class_exists($returnType) ? '\\' . $returnType : $returnType;
-            $methodStrings[] = sprintf("%s\npublic function %s(%s): %s {}", $methodMeta, $method->getName(), $paramList, $returnTypeRep);
+            $return = $this->getReturn($method);
+            $methodStrings[] = sprintf("%s\npublic function %s(%s)%s {}", $methodMeta, $method->getName(), $paramList, $return);
         }
 
         return implode(PHP_EOL, $methodStrings);
@@ -136,5 +135,16 @@ EOT;
             str_replace('\\', '_', $interfaceName),
             filemtime($fileName)
         );
+    }
+
+    private function getReturn(ReflectionMethod $method): string
+    {
+        if (! $method->hasReturnType()) {
+            return '';
+        }
+
+        $returnType = $method->getReturnType();
+
+        return ': ' . (class_exists((string) $returnType) ? '\\' . $returnType : $returnType);
     }
 }
