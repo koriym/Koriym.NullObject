@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
+use Koriym\NullObject\Exception\LogicException;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -52,7 +53,7 @@ EOT;
     {
         $class = new ReflectionClass($interface);
         if (! interface_exists($class->getName())) {
-            return null;
+            throw new LogicException($class->getName());
         }
 
         $ns = $class->getNamespaceName();
