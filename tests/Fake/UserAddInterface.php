@@ -7,7 +7,7 @@ namespace Koriym\NullObject;
 interface UserAddInterface
 {
     /**
-     * @DbPager
+     * @DbPager(id="id1", type="type1")
      */
     #[DbPager('id1', 'type1')]
     public function __invoke(string $id, string $name): void;

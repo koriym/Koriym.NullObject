@@ -22,6 +22,7 @@ use function sprintf;
 use function str_replace;
 
 use const PHP_EOL;
+use const PHP_VERSION_ID;
 
 final class NullObject
 {
@@ -120,24 +121,7 @@ EOT;
 
     private function getMethodMeta(ReflectionMethod $method): string
     {
-        /** @var list<ReflectionAttribute> $attrs */
-        $attrs = $method->getAttributes();
-        $attrList = [];
-        if ($attrs) {
-            foreach ($attrs as $attr) {
-                /** @var array<float|int|string> $args */
-                $args = $attr->getArguments();
-                $argList = [];
-                /** @var mixed $arg */
-                foreach ($args as $arg) {
-                    $argList[] = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
-                }
-
-                $attrList[] = sprintf('#[\%s(%s)]', (string) $attr->getName(), implode(', ', $argList));
-            }
-        }
-
-        $attr = implode(PHP_EOL, $attrList);
+        $attr =  PHP_VERSION_ID >= 80000 ? $this->getAttributes($method) : '';
 
         return sprintf("%s\n%s", $method->getDocComment(), $attr);
     }
@@ -179,5 +163,27 @@ EOT;
     {
         $code = $this->getCode($interface);
         file_put_contents($file, $code);
+    }
+
+    private function getAttributes(ReflectionMethod $method): string
+    {
+        /** @var list<ReflectionAttribute> $attrs */
+        $attrs = $method->getAttributes();
+        $attrList = [];
+        if ($attrs) {
+            foreach ($attrs as $attr) {
+                /** @var array<float|int|string> $args */
+                $args = $attr->getArguments();
+                $argList = [];
+                /** @var mixed $arg */
+                foreach ($args as $arg) {
+                    $argList[] = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
+                }
+
+                $attrList[] = sprintf('#[\%s(%s)]', (string) $attr->getName(), implode(', ', $argList));
+            }
+        }
+
+        return implode(PHP_EOL, $attrList);
     }
 }

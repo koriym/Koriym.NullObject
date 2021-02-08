@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
@@ -23,8 +24,8 @@ class NullObjectTest extends TestCase
      */
     public function testNullObjectAttribute(UserAddInterface $userAdd): void
     {
-        $attrs = (new ReflectionMethod($userAdd, '__invoke'))->getAttributes();
-        $attr = $attrs[0]->newInstance();
-        $this->assertInstanceOf(DbPager::class, $attr);
+        $method = (new ReflectionMethod($userAdd, '__invoke'));
+        $anotation = (new AnnotationReader())->getMethodAnnotation($method, DbPager::class);
+        $this->assertInstanceOf(DbPager::class, $anotation);
     }
 }
