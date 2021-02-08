@@ -10,7 +10,9 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 
+use function assert;
 use function class_exists;
+use function file_exists;
 use function file_put_contents;
 use function filemtime;
 use function implode;
@@ -72,25 +74,30 @@ EOT;
             filemtime($fileName)
         );
     }
+
     /**
-     * @phpstan-param class-string $interface
+     * @param class-string $interface
      *
-     * @pslam-param interface-string $interface
+     * @return class-string
      */
-    public function __invoke(string $interface): ?string
+    public function __invoke(string $interface): string
     {
         $class = new ReflectionClass($interface);
         $className = $class->getShortName() . 'Null';
         if (! class_exists($className, false)) {
-            $code = $this->getCode($interface);
             $file = $this->getNullFilePath($interface);
-            file_put_contents($file, $code);
+            if (! file_exists($file)) {
+                $this->writeCode($interface, $file);
+            }
 
             /** @psalm-suppress UnresolvableInclude */
             require $file;
         }
 
-        return $className;
+        $nullClass =  $interface . 'Null';
+        assert(class_exists($nullClass));
+
+        return $nullClass;
     }
 
     /**
@@ -163,5 +170,14 @@ EOT;
         $returnType = (string) $method->getReturnType();
 
         return ': ' . (class_exists($returnType) ? '\\' . $returnType : $returnType);
+    }
+
+    /**
+     * @param class-string $interface
+     */
+    private function writeCode(string $interface, string $file): void
+    {
+        $code = $this->getCode($interface);
+        file_put_contents($file, $code);
     }
 }
