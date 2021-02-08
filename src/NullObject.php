@@ -84,18 +84,17 @@ EOT;
     public function __invoke(string $interface): string
     {
         $class = new ReflectionClass($interface);
-        $className = $class->getShortName() . 'Null';
-        if (! class_exists($className, false)) {
-            $file = $this->getNullFilePath($interface);
-            if (! file_exists($file)) {
-                $this->writeCode($interface, $file);
-            }
-
-            /** @psalm-suppress UnresolvableInclude */
-            require $file;
+        $nullClass =  $interface . 'Null';
+        if (class_exists($nullClass, false)) {
+            return $nullClass;
         }
 
-        $nullClass =  $interface . 'Null';
+        $file = $this->getNullFilePath($interface);
+        if (! file_exists($file)) {
+            $this->writeCode($interface, $file);
+        }
+
+        require $file;
         assert(class_exists($nullClass));
 
         return $nullClass;

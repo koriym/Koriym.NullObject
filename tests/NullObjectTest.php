@@ -19,8 +19,17 @@ class NullObjectTest extends TestCase
         return $nullObject;
     }
 
+    public function testInvoke(): UserAddInterface
+    {
+        $nullClass = (new NullObject(__DIR__ . '/tmp'))(UserAddInterface::class);
+        $nullObject = new $nullClass();
+        $this->assertInstanceOf(UserAddInterface::class, $nullObject);
+
+        return $nullObject;
+    }
+
     /**
-     * @depends testGenerateNullObject
+     * @depends testInvoke
      */
     public function testNullObjectAttribute(UserAddInterface $userAdd): void
     {
