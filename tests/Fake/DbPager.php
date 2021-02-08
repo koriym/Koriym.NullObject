@@ -11,7 +11,9 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute]
 class DbPager implements NamedArgumentConstructorAnnotation
 {
+    /** @var string */
     public $id;
+    /** @var string */
     public $type;
 
     public function __construct(string $id, string $type)
