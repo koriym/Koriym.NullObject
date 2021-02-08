@@ -45,7 +45,7 @@ EOT;
      *
      * @pslam-param interface-string $interface
      */
-    public function __invoke(string $interface): ?string
+    public function getCode(string $interface): ?string
     {
         $class = new ReflectionClass($interface);
         if (! interface_exists($class->getName())) {
@@ -54,10 +54,37 @@ EOT;
 
         $ns = $class->getNamespaceName();
         $className = $class->getShortName() . 'Null';
+
+        return sprintf(self::CLASS_TEMPLATE, $ns, $className, $interface, $this->getMethods($interface));
+    }
+
+    /**
+     * @param class-string $interfaceName
+     */
+    public function getNullFilePath(string $interfaceName): string
+    {
+        $fileName = (string) (new ReflectionClass($interfaceName))->getFileName();
+
+        return sprintf(
+            '%s/%s_%s.php',
+            $this->tmpDir,
+            str_replace('\\', '_', $interfaceName),
+            filemtime($fileName)
+        );
+    }
+    /**
+     * @phpstan-param class-string $interface
+     *
+     * @pslam-param interface-string $interface
+     */
+    public function __invoke(string $interface): ?string
+    {
+        $class = new ReflectionClass($interface);
+        $className = $class->getShortName() . 'Null';
         if (! class_exists($className, false)) {
-            $class = sprintf(self::CLASS_TEMPLATE, $ns, $className, $interface, $this->getMethods($interface));
+            $code = $this->getCode($interface);
             $file = $this->getNullFilePath($interface);
-            file_put_contents($file, $class);
+            file_put_contents($file, $code);
 
             /** @psalm-suppress UnresolvableInclude */
             require $file;
@@ -125,21 +152,6 @@ EOT;
         }
 
         return implode(', ', $paramStrings);
-    }
-
-    /**
-     * @param class-string $interfaceName
-     */
-    public function getNullFilePath(string $interfaceName): string
-    {
-        $fileName = (string) (new ReflectionClass($interfaceName))->getFileName();
-
-        return sprintf(
-            '%s/%s_%s.php',
-            $this->tmpDir,
-            str_replace('\\', '_', $interfaceName),
-            filemtime($fileName)
-        );
     }
 
     private function getReturn(ReflectionMethod $method): string
