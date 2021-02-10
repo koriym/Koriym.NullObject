@@ -16,6 +16,7 @@ use function class_exists;
 use function file_exists;
 use function file_put_contents;
 use function filemtime;
+use function get_class;
 use function implode;
 use function interface_exists;
 use function is_string;
@@ -151,9 +152,10 @@ EOT;
             return '';
         }
 
-        $returnType = (string) $method->getReturnType();
+        $returnType = $method->getReturnType();
+        $returnTypeString =  $returnType && get_class($returnType) === ReflectionNamedType::class ? (string) $returnType : '';
 
-        return ': ' . (class_exists($returnType) ? '\\' . $returnType : $returnType);
+        return ': ' . (class_exists($returnTypeString) ? '\\' . $returnTypeString : $returnTypeString);
     }
 
     /**
