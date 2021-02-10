@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+$_ENV['NULL_OBJECT_TMP'] = __DIR__ . '/tmp';
+
 array_map('unlink', (array) glob(__DIR__ . '/tmp/*.php'));
 
 require dirname(__DIR__) . '/vendor/autoload.php';
