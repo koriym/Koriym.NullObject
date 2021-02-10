@@ -153,7 +153,7 @@ EOT;
 
         $returnType = $method->getReturnType();
 
-        $returnTypeString =  $returnType && get_class($returnType) === ReflectionNamedType::class ? (string) $returnType : '';
+        $returnTypeString =  $returnType ? $returnType->getName() : '';
 
         return ': ' . (class_exists($returnTypeString) ? '\\' . $returnTypeString : $returnTypeString);
     }
