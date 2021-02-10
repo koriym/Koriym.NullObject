@@ -85,7 +85,6 @@ EOT;
      */
     public function __invoke(string $interface): string
     {
-        $class = new ReflectionClass($interface);
         $nullClass =  $interface . 'Null';
         if (class_exists($nullClass, false)) {
             return $nullClass;
@@ -153,6 +152,7 @@ EOT;
         }
 
         $returnType = $method->getReturnType();
+
         $returnTypeString =  $returnType && get_class($returnType) === ReflectionNamedType::class ? (string) $returnType : '';
 
         return ': ' . (class_exists($returnTypeString) ? '\\' . $returnTypeString : $returnTypeString);
