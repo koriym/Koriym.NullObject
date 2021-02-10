@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Koriym\NullObject\NullObject;
 
-spl_autoload_register(static function (string $className): void {
+return static function (string $className): void {
     $hasNullPostfix = substr($className, -4) === 'Null';
     if (! $hasNullPostfix) {
         return;
@@ -26,4 +26,4 @@ spl_autoload_register(static function (string $className): void {
     }
 
     ($nullClass)($interfaceName);
-});
+};

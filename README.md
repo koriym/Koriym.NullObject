@@ -8,7 +8,24 @@ It was created for testing and AOP.
 
     composer require --dev koriym/null-object 1.x-dev
 
-## Usage
+## Getting Started
+
+1. Register autoloader
+
+```php
+$loader = require __DIR__ . '/vendor/koriym/null-object/autoload.php';
+spl_autoload_register($loader);
+```
+
+Or add it to `autoload-dev` in composer.json.
+
+```php
+    "autoload-dev": {
+        "files": ["./vendor/koriym/null-object/autoload.php"]
+    }
+```
+
+2. Creat NullObject by adding Null postfix
 
 ```php
 interface FooInterface

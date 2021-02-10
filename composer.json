@@ -20,7 +20,9 @@
         "psr-4": {
             "Koriym\\NullObject\\": "src/"
         },
-        "files": ["autoloader.php"]
+        "files": [
+            "autoload.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
