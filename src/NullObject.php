@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
+use Koriym\NullObject\Exception\FileNotWritable;
 use Koriym\NullObject\Exception\LogicException;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -11,45 +12,48 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 
-use function assert;
 use function class_exists;
-use function file_exists;
+use function dirname;
 use function file_put_contents;
-use function filemtime;
 use function implode;
 use function interface_exists;
+use function is_dir;
 use function is_string;
+use function mkdir;
+use function rename;
 use function sprintf;
-use function str_replace;
+use function tempnam;
+use function unlink;
 
 use const PHP_EOL;
 use const PHP_VERSION_ID;
 
-final class NullObject
+final class NullObject implements NullObjectInterface
 {
     private const CLASS_TEMPLATE = <<<EOT
-<?php
-namespace %s;
-
+%s
 class %s implements \%s
 {
 %s
 }
 EOT;
-    /** @var string */
-    private $tmpDir;
 
-    public function __construct(string $tmpDir)
+    /**
+     * {@inheritDoc}
+     */
+    public function newInstance(string $interface): object
     {
-        $this->tmpDir = $tmpDir;
+        $generated = $this->generate($interface);
+        eval($generated->code);
+
+        /** @psalm-suppress MixedMethodCall */
+        return new ($generated->class)();
     }
 
     /**
-     * @phpstan-param class-string $interface
-     *
-     * @pslam-param interface-string $interface
+     * {@inheritDoc}
      */
-    public function getCode(string $interface): ?string
+    public function generate(string $interface): GeneratedCode
     {
         $class = new ReflectionClass($interface);
         if (! interface_exists($class->getName())) {
@@ -57,47 +61,27 @@ EOT;
         }
 
         $ns = $class->getNamespaceName();
-        $className = $class->getShortName() . 'Null';
+        $shortNullClassName = $class->getShortName() . 'Null';
+        /** @var class-string $fqClassName */
+        $fqClassName = $class->getName() . 'Null';
+        $nsSyntax = $ns ? sprintf("namespace %s;\n", $ns) : '';
+        $code = sprintf(self::CLASS_TEMPLATE, $nsSyntax, $shortNullClassName, $interface, $this->getMethods($interface));
 
-        return sprintf(self::CLASS_TEMPLATE, $ns, $className, $interface, $this->getMethods($interface));
+        return new GeneratedCode($fqClassName, $code);
     }
 
     /**
-     * @param class-string $interfaceName
+     * {@inheritDoc}
      */
-    public function getNullFilePath(string $interfaceName): string
+    public function save(string $interface, string $scriptDir): string
     {
-        $fileName = (string) (new ReflectionClass($interfaceName))->getFileName();
+        $generated = $this->generate($interface);
+        $filePath = $generated->filePath($scriptDir);
+        $this->filePutContets($filePath, $generated->phpCode());
+        /** @psalm-suppress UnresolvableInclude */
+        require $filePath;
 
-        return sprintf(
-            '%s/%s_%s.php',
-            $this->tmpDir,
-            str_replace('\\', '_', $interfaceName),
-            filemtime($fileName)
-        );
-    }
-
-    /**
-     * @param class-string $interface
-     *
-     * @return class-string
-     */
-    public function __invoke(string $interface): string
-    {
-        $nullClass =  $interface . 'Null';
-        if (class_exists($nullClass, false)) {
-            return $nullClass;
-        }
-
-        $file = $this->getNullFilePath($interface);
-        if (! file_exists($file)) {
-            $this->writeCode($interface, $file);
-        }
-
-        require $file;
-        assert(class_exists($nullClass));
-
-        return $nullClass;
+        return $generated->class;
     }
 
     /**
@@ -157,15 +141,6 @@ EOT;
         return ': ' . (class_exists($returnTypeString) ? '\\' . $returnTypeString : $returnTypeString);
     }
 
-    /**
-     * @param class-string $interface
-     */
-    private function writeCode(string $interface, string $file): void
-    {
-        $code = $this->getCode($interface);
-        file_put_contents($file, $code);
-    }
-
     private function getAttributes(ReflectionMethod $method): string
     {
         /** @var list<ReflectionAttribute> $attrs */
@@ -186,5 +161,19 @@ EOT;
         }
 
         return implode(PHP_EOL, $attrList);
+    }
+
+    public function filePutContets(string $filename, string $content): void
+    {
+        $dir = dirname($filename);
+        ! is_dir($dir) && mkdir($dir, 0777, true);
+        $tmpFile = tempnam(dirname($filename), 'swap');
+        if (is_string($tmpFile) && file_put_contents($tmpFile, $content) && @rename($tmpFile, $filename)) {
+            return;
+        }
+
+        @unlink((string) $tmpFile);
+
+        throw new FileNotWritable($filename);
     }
 }

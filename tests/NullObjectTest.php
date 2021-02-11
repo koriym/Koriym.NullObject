@@ -10,20 +10,41 @@ use Koriym\NullObject\Exception\LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
+use function dirname;
+use function spl_autoload_register;
+
 class NullObjectTest extends TestCase
 {
-    public function testInvoke(): UserAddInterface
+    /** @var NullObject */
+    private $nullObject;
+
+    /** @var string */
+    private $scriptDir;
+
+    protected function setUp(): void
     {
-        $nullClass = (new NullObject(__DIR__ . '/tmp'))(UserAddInterface::class);
+        $this->nullObject = new NullObject();
+        $this->scriptDir = __DIR__ . '/tmp';
+        parent::setUp();
+    }
+
+    public function testNewInstance(): void
+    {
+        $nullObject = $this->nullObject->newInstance(FooInterface::class);
+        $this->assertInstanceOf(FooInterface::class, $nullObject);
+    }
+
+    public function testSave(): UserAddInterface
+    {
+        $nullClass = $this->nullObject->save(UserAddInterface::class, $this->scriptDir);
         $nullObject = new $nullClass();
         $this->assertInstanceOf(UserAddInterface::class, $nullObject);
-        (new NullObject(__DIR__ . '/tmp'))(UserAddInterface::class);
 
         return $nullObject;
     }
 
     /**
-     * @depends testInvoke
+     * @depends testSave
      */
     public function testNullObjectAttribute(UserAddInterface $userAdd): void
     {
@@ -34,14 +55,15 @@ class NullObjectTest extends TestCase
 
     public function testAutoloader(): void
     {
+        spl_autoload_register(require dirname(__DIR__) . '/autoload.php');
         $nullClass = BarInterface::class . 'Null';
-        $nullObject = new $nullClass();
+        $nullObject = new $nullClass(); // @phpstan-ignore-line
         $this->assertInstanceOf(BarInterface::class, $nullObject);
     }
 
     public function testInvaliClass(): void
     {
         $this->expectException(LogicException::class);
-        (new NullObject(__DIR__ . '/tmp'))->getCode(DateTime::class);
+        (new NullObject())->generate(DateTime::class);
     }
 }

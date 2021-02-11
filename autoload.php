@@ -14,16 +14,7 @@ return static function (string $className): void {
     if (! interface_exists($interfaceName)) {
         return;
     }
-
-    $tmpDir = $_ENV['NULL_OBJECT_TMP'] ?? sys_get_temp_dir();
-    assert(is_string($tmpDir));
-    $nullClass = new NullObject($tmpDir);
-    $file = $nullClass->getNullFilePath($interfaceName);
-    if (file_exists($file)) {
-        require $file;
-
-        return;
-    }
-
-    ($nullClass)($interfaceName);
+    $nullObject = new NullObject();
+    $generated = $nullObject->generate($interfaceName);
+    eval($generated->code);
 };
