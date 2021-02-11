@@ -10,7 +10,9 @@ use Koriym\NullObject\Exception\LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
+use function assert;
 use function dirname;
+use function interface_exists;
 use function spl_autoload_register;
 
 class NullObjectTest extends TestCase
@@ -28,25 +30,47 @@ class NullObjectTest extends TestCase
         parent::setUp();
     }
 
-    public function testNewInstance(): void
+    /**
+     * @return list<list<string>>
+     */
+    public function interfaceProvider(): array
     {
-        $nullObject = $this->nullObject->newInstance(FooInterface::class);
-        $this->assertInstanceOf(FooInterface::class, $nullObject);
+        return [
+            [FakeFooInterface::class],
+            [FakeNullInterface::class],
+        ];
     }
 
-    public function testSave(): UserAddInterface
+    /**
+     * @param class-string $interface
+     *
+     * @dataProvider interfaceProvider
+     */
+    public function testNewInstance(string $interface): void
     {
-        $nullClass = $this->nullObject->save(UserAddInterface::class, $this->scriptDir);
+        assert(interface_exists($interface));
+        $nullObject = $this->nullObject->newInstance($interface);
+        $this->assertInstanceOf($interface, $nullObject);
+    }
+
+    public function testSave(): FakeUserAddInterface
+    {
+        $nullClass = $this->nullObject->save(FakeUserAddInterface::class, $this->scriptDir);
         $nullObject = new $nullClass();
-        $this->assertInstanceOf(UserAddInterface::class, $nullObject);
+        $this->assertInstanceOf(FakeUserAddInterface::class, $nullObject);
 
         return $nullObject;
+    }
+
+    public function testSaveTwice(): void
+    {
+        $this->testSave();
     }
 
     /**
      * @depends testSave
      */
-    public function testNullObjectAttribute(UserAddInterface $userAdd): void
+    public function testNullObjectAttribute(FakeUserAddInterface $userAdd): void
     {
         $method = (new ReflectionMethod($userAdd, '__invoke'));
         $anotation = (new AnnotationReader())->getMethodAnnotation($method, DbPager::class);

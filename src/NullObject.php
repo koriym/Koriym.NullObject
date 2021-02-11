@@ -75,6 +75,11 @@ EOT;
      */
     public function save(string $interface, string $scriptDir): string
     {
+        $nullClass = $interface . 'Null';
+        if (class_exists($nullClass, false)) {
+            return $nullClass;
+        }
+
         $generated = $this->generate($interface);
         $filePath = $generated->filePath($scriptDir);
         $this->filePutContets($filePath, $generated->phpCode());
@@ -172,8 +177,10 @@ EOT;
             return;
         }
 
+        // @codeCoverageIgnoreStart
         @unlink((string) $tmpFile);
 
         throw new FileNotWritable($filename);
+        // @codeCoverageIgnoreEnd
     }
 }

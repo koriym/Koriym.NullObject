@@ -30,7 +30,8 @@
                 "tests/",
                 "tests/Fake"
             ]
-        }
+        },
+        "files": ["tests/Fake/FakeNoNsInterface.php"]
     },
     "scripts": {
         "setup": "php bin/setup.php",

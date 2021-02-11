@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
-interface UserAddInterface
+interface FakeUserAddInterface
 {
     /**
      * @DbPager(id="id1", type="type1")

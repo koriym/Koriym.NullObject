@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
-interface FooInterface
+interface FakeNullInterface
 {
-    public function getInt(): int;
 }
