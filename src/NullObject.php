@@ -101,7 +101,7 @@ EOT;
             $params = $method->getParameters();
             $paramList = $this->getParamList($params);
             $return = $this->getReturn($method);
-            $methodStrings[] = sprintf("%s\npublic function %s(%s)%s {}", $methodMeta, $method->getName(), $paramList, $return);
+            $methodStrings[] = sprintf("%s\n    public function %s(%s)%s {}", $methodMeta, $method->getName(), $paramList, $return);
         }
 
         return implode(PHP_EOL, $methodStrings);
@@ -111,7 +111,7 @@ EOT;
     {
         $attr =  PHP_VERSION_ID >= 80000 ? $this->getAttributes($method) : '';
 
-        return sprintf("%s\n%s", $method->getDocComment(), $attr);
+        return sprintf("    %s\n    %s", $method->getDocComment(), $attr);
     }
 
     /**
