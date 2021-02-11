@@ -1,6 +1,6 @@
 <?php
 
-namespace Koriym\NullObject;
+namespace Koriym\NullObject\Annotation;
 
 use Attribute;
 use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;

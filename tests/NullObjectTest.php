@@ -6,6 +6,7 @@ namespace Koriym\NullObject;
 
 use DateTime;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Koriym\NullObject\Annotation\DbPager;
 use Koriym\NullObject\Exception\LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;

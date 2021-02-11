@@ -12,6 +12,7 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 
+use function array_slice;
 use function class_exists;
 use function dirname;
 use function file_put_contents;
@@ -59,13 +60,12 @@ EOT;
         if (! interface_exists($class->getName())) {
             throw new LogicException($class->getName());
         }
+        $classMeta = $this->getClassMeta($class);
 
-        $ns = $class->getNamespaceName();
         $shortNullClassName = $class->getShortName() . 'Null';
         /** @var class-string $fqClassName */
         $fqClassName = $class->getName() . 'Null';
-        $nsSyntax = $ns ? sprintf("namespace %s;\n", $ns) : '';
-        $code = sprintf(self::CLASS_TEMPLATE, $nsSyntax, $shortNullClassName, $interface, $this->getMethods($interface));
+        $code = sprintf(self::CLASS_TEMPLATE, $classMeta, $shortNullClassName, $interface, $this->getMethods($interface));
 
         return new GeneratedCode($fqClassName, $code);
     }
@@ -89,6 +89,14 @@ EOT;
         return $generated->class;
     }
 
+    private function getClassMeta(ReflectionClass $class): string
+    {
+        $fileName = $class->getFileName();
+        $file = file($class->getFileName());
+        $fileMeta = array_slice($file,1, $class->getStartLine() - 2);
+
+        return implode('', $fileMeta);
+    }
     /**
      * @param class-string $interface
      */

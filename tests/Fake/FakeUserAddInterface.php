@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
+use Koriym\NullObject\Annotation\DbPager;
+
 interface FakeUserAddInterface
 {
     /**
