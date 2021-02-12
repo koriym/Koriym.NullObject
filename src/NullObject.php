@@ -11,6 +11,7 @@ use ReflectionClass;
 use ReflectionMethod;
 
 use function array_slice;
+use function assert;
 use function class_exists;
 use function dirname;
 use function file;
@@ -44,9 +45,13 @@ EOT;
     {
         $generated = $this->generate($interface);
         eval($generated->code);
+        $class = $generated->class;
 
         /** @psalm-suppress MixedMethodCall */
-        return (new ReflectionClass($generated->class))->newInstanceWithoutConstructor();
+        $object = new $class();
+        assert($object instanceof $interface);
+
+        return $object;
     }
 
     /**

@@ -7,7 +7,13 @@ namespace Koriym\NullObject;
 interface NullObjectInterface
 {
     /**
-     * @param class-string $interface
+     * @psalm-param class-string $interface
+     * @phpstan-param class-string<T> $interface
+     *
+     * @psalm-return object
+     * @phpstan-return T
+     *
+     * @phpstan-template T of object
      */
     public function newInstance(string $interface): object;
 
