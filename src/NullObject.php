@@ -46,7 +46,7 @@ EOT;
         eval($generated->code);
 
         /** @psalm-suppress MixedMethodCall */
-        return new ($generated->class)();
+        return (new ReflectionClass($generated->class))->newInstanceWithoutConstructor();
     }
 
     /**
