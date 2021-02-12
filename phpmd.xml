@@ -27,7 +27,6 @@
     <rule ref="rulesets/codesize.xml/TooManyFields"/>
     <rule ref="rulesets/codesize.xml/TooManyMethods"/>
     <!--design-->
-    <rule ref="rulesets/design.xml/EvalExpression"/>
     <rule ref="rulesets/design.xml/ExitExpression"/>
     <rule ref="rulesets/design.xml/GotoStatement" />
     <rule ref="rulesets/design.xml/NumberOfChildren"/>
