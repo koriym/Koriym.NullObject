@@ -9,12 +9,11 @@ use Koriym\NullObject\Exception\LogicException;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
-use ReflectionNamedType;
-use ReflectionParameter;
 
 use function array_slice;
 use function class_exists;
 use function dirname;
+use function file;
 use function file_put_contents;
 use function implode;
 use function interface_exists;
@@ -23,6 +22,7 @@ use function is_string;
 use function mkdir;
 use function rename;
 use function sprintf;
+use function str_replace;
 use function tempnam;
 use function unlink;
 
@@ -32,11 +32,9 @@ use const PHP_VERSION_ID;
 final class NullObject implements NullObjectInterface
 {
     private const CLASS_TEMPLATE = <<<EOT
-%s
-class %s implements \%s
+%sclass %s implements \%s
 {
-%s
-}
+%s}
 EOT;
 
     /**
@@ -60,12 +58,13 @@ EOT;
         if (! interface_exists($class->getName())) {
             throw new LogicException($class->getName());
         }
+
         $classMeta = $this->getClassMeta($class);
 
         $shortNullClassName = $class->getShortName() . 'Null';
         /** @var class-string $fqClassName */
         $fqClassName = $class->getName() . 'Null';
-        $code = sprintf(self::CLASS_TEMPLATE, $classMeta, $shortNullClassName, $interface, $this->getMethods($interface));
+        $code = sprintf(self::CLASS_TEMPLATE, $classMeta, $shortNullClassName, $interface, $this->getMethods($class));
 
         return new GeneratedCode($fqClassName, $code);
     }
@@ -89,27 +88,29 @@ EOT;
         return $generated->class;
     }
 
+    /**
+     * @param ReflectionClass<object> $class
+     */
     private function getClassMeta(ReflectionClass $class): string
     {
-        $fileName = $class->getFileName();
-        $file = file($class->getFileName());
-        $fileMeta = array_slice($file,1, $class->getStartLine() - 2);
+        $file = (array) file((string) $class->getFileName());
+        $fileMeta = array_slice($file, 1, $class->getStartLine() - 2);
 
         return implode('', $fileMeta);
     }
+
     /**
-     * @param class-string $interface
+     * @param ReflectionClass<object> $class
      */
-    private function getMethods(string $interface): string
+    private function getMethods(ReflectionClass $class): string
     {
-        $methods = (new ReflectionClass($interface))->getMethods();
+        $methods = $class->getMethods();
         $methodStrings = [];
+        $file = (array) file((string) $class->getFileName());
         foreach ($methods as $method) {
-            $methodMeta = $this->getMethodMeta($method);
-            $params = $method->getParameters();
-            $paramList = $this->getParamList($params);
-            $return = $this->getReturn($method);
-            $methodStrings[] = sprintf("%s\n    public function %s(%s)%s {}", $methodMeta, $method->getName(), $paramList, $return);
+            $interfaceMethod = implode(PHP_EOL, array_slice($file, $method->getStartLine() - 1, $method->getEndLine()  - $method->getStartLine() + 1));
+            $methodSignature = str_replace(';', "\n    {\n    }", $interfaceMethod);
+            $methodStrings[] = $this->getMethodMeta($method) . $methodSignature;
         }
 
         return implode(PHP_EOL, $methodStrings);
@@ -117,41 +118,9 @@ EOT;
 
     private function getMethodMeta(ReflectionMethod $method): string
     {
-        $attr =  PHP_VERSION_ID >= 80000 ? $this->getAttributes($method) : '';
+        $attr =  PHP_VERSION_ID >= 80000 ? sprintf("    %s\n", $this->getAttributes($method)) : '';
 
-        return sprintf("    %s\n    %s", $method->getDocComment(), $attr);
-    }
-
-    /**
-     * @param array<ReflectionParameter> $params
-     */
-    private function getParamList(array $params): string
-    {
-        $paramStrings = [];
-        foreach ($params as $param) {
-            $paramType = $param->getType();
-            $hint = $paramType instanceof ReflectionNamedType ? $paramType->getName() : '';
-            $name = $param->getName();
-            /** @var mixed $defaultValue */
-            $defaultValue = $param->isDefaultValueAvailable() ? sprintf(' = %s', (string) $param->getDefaultValue()) : '';
-            $default = $defaultValue ? sprintf(' = %s', (string) $defaultValue) : '';
-            $paramStrings[] = sprintf('%s $%s%s', $hint, $name, $default);
-        }
-
-        return implode(', ', $paramStrings);
-    }
-
-    private function getReturn(ReflectionMethod $method): string
-    {
-        if (! $method->hasReturnType()) {
-            return '';
-        }
-
-        $returnType = $method->getReturnType();
-
-        $returnTypeString =  $returnType instanceof ReflectionNamedType ? $returnType->getName() : '';
-
-        return ': ' . (class_exists($returnTypeString) ? '\\' . $returnTypeString : $returnTypeString);
+        return sprintf("    %s\n%s", $method->getDocComment(), $attr);
     }
 
     private function getAttributes(ReflectionMethod $method): string
@@ -161,15 +130,7 @@ EOT;
         $attrList = [];
         if ($attrs) {
             foreach ($attrs as $attr) {
-                /** @var array<float|int|string> $args */
-                $args = $attr->getArguments();
-                $argList = [];
-                /** @var mixed $arg */
-                foreach ($args as $arg) {
-                    $argList[] = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
-                }
-
-                $attrList[] = sprintf('#[\%s(%s)]', (string) $attr->getName(), implode(', ', $argList));
+                $attrList[] = $this->getAttribute($attr);
             }
         }
 
@@ -179,7 +140,7 @@ EOT;
     public function filePutContets(string $filename, string $content): void
     {
         $dir = dirname($filename);
-        ! is_dir($dir) && mkdir($dir, 0777, true);
+        ! is_dir($dir) && ! mkdir($dir, 0777, true) && ! is_dir($dir);
         $tmpFile = tempnam(dirname($filename), 'swap');
         if (is_string($tmpFile) && file_put_contents($tmpFile, $content) && @rename($tmpFile, $filename)) {
             return;
@@ -190,5 +151,22 @@ EOT;
 
         throw new FileNotWritable($filename);
         // @codeCoverageIgnoreEnd
+    }
+
+    private function getAttribute(ReflectionAttribute $attr): string
+    {
+        /** @var array<float|int|string> $args */
+        $args = $attr->getArguments();
+        $argList = [];
+        /** @var mixed $arg */
+        foreach ($args as $arg) {
+            $argList[] = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
+        }
+
+        /** @var class-string $class */
+        $class = $attr->getName();
+        $shortName = (new ReflectionClass($class))->getShortName();
+
+        return sprintf('#[%s(%s)]', $shortName, implode(', ', $argList));
     }
 }
