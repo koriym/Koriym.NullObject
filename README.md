@@ -1,4 +1,4 @@
-# Koriym.NullObject
+# PHP NullObject
 
 Generates a NullObject from an interface.
 It was created for testing and AOP.
@@ -6,7 +6,7 @@ It was created for testing and AOP.
 
 ## Installation
 
-    composer require --dev koriym/null-object 1.x-dev
+    composer require --dev koriym/null-object
 
 ## Getting Started
 
