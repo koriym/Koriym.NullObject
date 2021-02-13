@@ -1,5 +1,10 @@
 # PHP NullObject
 
+[![codecov](https://codecov.io/gh/koriym/Koriym.NullObject/branch/1.x/graph/badge.svg?token=CxrX5mQTBF)](https://codecov.io/gh/koriym/Koriym.NullObject)
+[![Type Coverage](https://shepherd.dev/github/ray-di/Ray.Aop/coverage.svg)](https://shepherd.dev/github/ray-di/Ray.Aop)
+![Continuous Integration](https://github.com/koriym/Koriym.NullObject/workflows/Continuous%20Integration/badge.svg)
+
+
 Generates a NullObject from an interface.
 It was created for testing and AOP.
 
