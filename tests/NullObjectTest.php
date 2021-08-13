@@ -86,7 +86,7 @@ class NullObjectTest extends TestCase
         $this->assertInstanceOf(BarInterface::class, $nullObject);
     }
 
-    public function testInvaliClass(): void
+    public function testInvalidClass(): void
     {
         $this->expectException(LogicException::class);
         (new NullObject())->generate(DateTime::class);

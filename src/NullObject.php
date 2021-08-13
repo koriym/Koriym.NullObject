@@ -86,7 +86,7 @@ EOT;
 
         $generated = $this->generate($interface);
         $filePath = $generated->filePath($scriptDir);
-        $this->filePutContets($filePath, $generated->phpCode());
+        $this->filePutContents($filePath, $generated->phpCode());
         /** @psalm-suppress UnresolvableInclude */
         require $filePath;
 
@@ -142,7 +142,7 @@ EOT;
         return implode(PHP_EOL, $attrList);
     }
 
-    public function filePutContets(string $filename, string $content): void
+    public function filePutContents(string $filename, string $content): void
     {
         $dir = dirname($filename);
         ! is_dir($dir) && ! mkdir($dir, 0777, true) && ! is_dir($dir);
