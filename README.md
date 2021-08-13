@@ -39,7 +39,7 @@ assert(new $class instanceof FooInterface);
 ```
 ## On the fly
 
-It is also possible to create a null object by simply adding a `Null` postfix to the interface by registering autoloader, If this doesn't sound too wild to you.
+It is also possible to create a null object by simply adding a `Null` suffix to the interface by registering autoloader, If this doesn't sound too wild to you.
 
 ```php
 $loader = require __DIR__ . '/vendor/koriym/null-object/autoload.php';
@@ -57,7 +57,7 @@ or add it to `autoload-dev` in composer.json.
 You can create Null Object as follows.
 
 ```php
-$nullClass = FooInterface::class . 'Null'; // add Null postfix to the interface
+$nullClass = FooInterface::class . 'Null'; // add Null suffix to the interface
 $foo = new $nullClass;  // instantiate a NullObject
 assert($foo instanceof FooInterface);
 ```
