@@ -59,6 +59,7 @@ class NullObjectTest extends TestCase
         $nullClass = $this->nullObject->save(FakeUserAddInterface::class, $this->scriptDir);
         $nullObject = new $nullClass();
         $this->assertInstanceOf(FakeUserAddInterface::class, $nullObject);
+        $this->assertFileExists(__DIR__ . '/tmp/Koriym_NullObject_FakeUserAddInterfaceNull.php');
 
         return $nullObject;
     }
