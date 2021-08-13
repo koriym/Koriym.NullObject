@@ -27,7 +27,7 @@ final class GeneratedCode
     public function filePath(string $scriptDir): string
     {
         return sprintf(
-            '%s/%sNull.php',
+            '%s/%s.php',
             $scriptDir,
             str_replace('\\', '_', $this->class)
         );
