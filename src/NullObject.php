@@ -19,6 +19,7 @@ use function file_put_contents;
 use function implode;
 use function interface_exists;
 use function is_dir;
+use function is_int;
 use function is_string;
 use function mkdir;
 use function rename;
@@ -30,6 +31,9 @@ use function unlink;
 use const PHP_EOL;
 use const PHP_VERSION_ID;
 
+/**
+ * @template T of object
+ */
 final class NullObject implements NullObjectInterface
 {
     private const CLASS_TEMPLATE = <<<EOT
@@ -128,14 +132,17 @@ EOT;
         return sprintf("    %s\n%s", $method->getDocComment(), $attr);
     }
 
+    /**
+     * @psalm-suppress MixedAssignment
+     */
     private function getAttributes(ReflectionMethod $method): string
     {
-        /** @var list<ReflectionAttribute> $attrs */
         $attrs = $method->getAttributes();
         $attrList = [];
         if ($attrs) {
             foreach ($attrs as $attr) {
-                $attrList[] = $this->getAttribute($attr);
+                /** @psalm-var ReflectionAttribute $attr */
+                $attrList[] = $this->getAttribute($attr); // @phpstan-ignore-line
             }
         }
 
@@ -158,14 +165,18 @@ EOT;
         // @codeCoverageIgnoreEnd
     }
 
+    /**
+     * @psalm-param ReflectionAttribute $attr
+     * @phpstan-param ReflectionAttribute<object> $attr
+     */
     private function getAttribute(ReflectionAttribute $attr): string
     {
         /** @var array<float|int|string> $args */
         $args = $attr->getArguments();
         $argList = [];
-        /** @var mixed $arg */
-        foreach ($args as $arg) {
-            $argList[] = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
+        foreach ($args as $key => $arg) {
+            $val = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
+            $argList[$key] = is_int($key) ? $val : "{$key}: $val";
         }
 
         /** @var class-string $class */

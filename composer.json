@@ -47,7 +47,7 @@
         ],
         "sa": [
             "./vendor/bin/phpstan analyse -c phpstan.neon",
-            "psalm --show-info=true"
+            "./vendor/bin/psalm --show-info=true --monochrome"
         ],
         "tests": [
             "@cs",
@@ -75,5 +75,10 @@
         "metrics": "Build metrics report",
         "tests": "Run tests and quality checks",
         "build": "Build project"
+    },
+    "config": {
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        }
     }
 }

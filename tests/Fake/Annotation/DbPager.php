@@ -18,6 +18,7 @@ class DbPager implements NamedArgumentConstructorAnnotation
 
     public function __construct(string $id, string $type)
     {
-        unset($id, $type);
+        $this->id = $id;
+        $this->type = $type;
     }
 }
