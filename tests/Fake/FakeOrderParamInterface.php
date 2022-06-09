@@ -8,9 +8,6 @@ use Koriym\NullObject\Annotation\DbPager;
 
 interface FakeOrderParamInterface
 {
-    /**
-     * @DbPager(id="id1", type="type1")
-     */
-    #[DbPager('type1', 'id1' )]
+    #[DbPager('id1', 'type1')]
     public function __invoke(string $id, string $name): void;
 }

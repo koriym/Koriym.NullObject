@@ -19,6 +19,7 @@ use function file_put_contents;
 use function implode;
 use function interface_exists;
 use function is_dir;
+use function is_int;
 use function is_string;
 use function mkdir;
 use function rename;
@@ -175,7 +176,7 @@ EOT;
         $argList = [];
         foreach ($args as $key => $arg) {
             $val = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
-            $argList[$key] = "{$key}: $val";
+            $argList[$key] = is_int($key) ? $val : "{$key}: $val";
         }
 
         /** @var class-string $class */
