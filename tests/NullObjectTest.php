@@ -16,9 +16,12 @@ use function dirname;
 use function interface_exists;
 use function spl_autoload_register;
 
+/**
+ * @template T of object
+ */
 class NullObjectTest extends TestCase
 {
-    /** @var NullObject */
+    /** @var NullObject<T> */
     private $nullObject;
 
     /** @var string */
@@ -43,7 +46,7 @@ class NullObjectTest extends TestCase
     }
 
     /**
-     * @param class-string $interface
+     * @param class-string<T> $interface
      *
      * @dataProvider interfaceProvider
      */
@@ -60,6 +63,7 @@ class NullObjectTest extends TestCase
         $nullObject = new $nullClass();
         $this->assertInstanceOf(FakeUserAddInterface::class, $nullObject);
         $this->assertFileExists(__DIR__ . '/tmp/Koriym_NullObject_FakeUserAddInterfaceNull.php');
+        assert($nullObject instanceof FakeUserAddInterface);
 
         return $nullObject;
     }

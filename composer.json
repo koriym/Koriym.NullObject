@@ -47,7 +47,7 @@
         ],
         "sa": [
             "./vendor/bin/phpstan analyse -c phpstan.neon",
-            "psalm --show-info=true"
+            "./vendor/bin/psalm --show-info=true --monochrome"
         ],
         "tests": [
             "@cs",
