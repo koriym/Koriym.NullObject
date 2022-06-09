@@ -11,6 +11,6 @@ interface FakeUserAddInterface
     /**
      * @DbPager(id="id1", type="type1")
      */
-    #[DbPager('id1', 'type1')]
+    #[DbPager(type:'type1', id:'id1' )]
     public function __invoke(string $id, string $name): void;
 }

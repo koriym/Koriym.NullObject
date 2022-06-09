@@ -92,4 +92,18 @@ class NullObjectTest extends TestCase
         $this->expectException(LogicException::class);
         (new NullObject())->generate(DateTime::class);
     }
+
+    /**
+     * @required PHP8
+     */
+    public function testParamsOrder(): void
+    {
+        $nullClass = $this->nullObject->save(FakeUserAddInterface::class, $this->scriptDir);
+        $nullObject = new $nullClass();
+        $method = new ReflectionMethod($nullObject, '__invoke');
+        $dbPager = $method->getAttributes(DbPager::class)[0];
+        $instance = $dbPager->newInstance();
+        $this->assertSame('id1', $instance->id);
+        $this->assertSame('type1', $instance->type);
+    }
 }
