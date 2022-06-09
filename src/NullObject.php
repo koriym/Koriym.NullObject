@@ -164,8 +164,9 @@ EOT;
         $args = $attr->getArguments();
         $argList = [];
         /** @var mixed $arg */
-        foreach ($args as $arg) {
-            $argList[] = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
+        foreach ($args as $key => $arg) {
+            $val = is_string($arg) ? sprintf("'%s'", $arg) : (string) $arg;
+            $argList[$key] = "{$key}: $val";
         }
 
         /** @var class-string $class */
