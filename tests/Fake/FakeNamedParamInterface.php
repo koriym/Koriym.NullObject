@@ -6,7 +6,7 @@ namespace Koriym\NullObject;
 
 use Koriym\NullObject\Annotation\DbPager;
 
-interface FakeUserAddInterface
+interface FakeNamedParamInterface
 {
     /**
      * @DbPager(id="id1", type="type1")

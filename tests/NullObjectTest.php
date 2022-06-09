@@ -57,13 +57,13 @@ class NullObjectTest extends TestCase
         $this->assertInstanceOf($interface, $nullObject);
     }
 
-    public function testSave(): FakeUserAddInterface
+    public function testSave(): FakeNamedParamInterface
     {
-        $nullClass = $this->nullObject->save(FakeUserAddInterface::class, $this->scriptDir);
+        $nullClass = $this->nullObject->save(FakeNamedParamInterface::class, $this->scriptDir);
         $nullObject = new $nullClass();
-        $this->assertInstanceOf(FakeUserAddInterface::class, $nullObject);
-        $this->assertFileExists(__DIR__ . '/tmp/Koriym_NullObject_FakeUserAddInterfaceNull.php');
-        assert($nullObject instanceof FakeUserAddInterface);
+        $this->assertInstanceOf(FakeNamedParamInterface::class, $nullObject);
+        $this->assertFileExists(__DIR__ . '/tmp/Koriym_NullObject_FakeNamedParamInterfaceNull.php');
+        assert($nullObject instanceof FakeNamedParamInterface);
 
         return $nullObject;
     }
@@ -76,7 +76,7 @@ class NullObjectTest extends TestCase
     /**
      * @depends testSave
      */
-    public function testNullObjectAttribute(FakeUserAddInterface $userAdd): void
+    public function testNullObjectAttribute(FakeNamedParamInterface $userAdd): void
     {
         $method = (new ReflectionMethod($userAdd, '__invoke'));
         $anotation = (new AnnotationReader())->getMethodAnnotation($method, DbPager::class);
@@ -100,9 +100,23 @@ class NullObjectTest extends TestCase
     /**
      * @required PHP8
      */
-    public function testParamsOrder(): void
+    public function testNamedParamsAttribute(): void
     {
-        $nullClass = $this->nullObject->save(FakeUserAddInterface::class, $this->scriptDir);
+        $nullClass = $this->nullObject->save(FakeNamedParamInterface::class, $this->scriptDir);
+        $nullObject = new $nullClass();
+        $method = new ReflectionMethod($nullObject, '__invoke');
+        $dbPager = $method->getAttributes(DbPager::class)[0];
+        $instance = $dbPager->newInstance();
+        $this->assertSame('id1', $instance->id);
+        $this->assertSame('type1', $instance->type);
+    }
+
+    /**
+     * @required PHP8
+     */
+    public function testOrderParamsAttribute(): void
+    {
+        $nullClass = $this->nullObject->save(FakeOrderParamInterface::class, $this->scriptDir);
         $nullObject = new $nullClass();
         $method = new ReflectionMethod($nullObject, '__invoke');
         $dbPager = $method->getAttributes(DbPager::class)[0];
