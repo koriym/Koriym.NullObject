@@ -6,6 +6,7 @@ namespace Koriym\NullObject;
 
 use Koriym\NullObject\Exception\FileNotWritable;
 use Koriym\NullObject\Exception\LogicException;
+use Ray\Aop\VisitorFactory;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -36,6 +37,9 @@ use const PHP_VERSION_ID;
  */
 final class NullObject implements NullObjectInterface
 {
+    /** @var array<string, GeneratedCode> */
+    public static $codes = [];
+
     private const CLASS_TEMPLATE = <<<EOT
 %sclass %s implements \%s
 {
@@ -90,6 +94,15 @@ EOT;
 
         $generated = $this->generate($interface);
         $filePath = $generated->filePath($scriptDir);
+        if ($scriptDir === '') {
+            eval($generated->code);
+            if (class_exists(VisitorFactory::class)) {
+                VisitorFactory::$codes[$interface . 'Null'] = $generated->code;
+            }
+
+            return $generated->class;
+        }
+
         $this->filePutContents($filePath, $generated->phpCode());
         /** @psalm-suppress UnresolvableInclude */
         require $filePath;
