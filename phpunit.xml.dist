@@ -6,7 +6,7 @@
     </include>
   </coverage>
   <testsuites>
-    <testsuite name="all">
+    <testsuite name="Koriym.NullOject test suite">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
