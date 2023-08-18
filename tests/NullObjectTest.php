@@ -124,4 +124,12 @@ class NullObjectTest extends TestCase
         $this->assertSame('id1', $instance->id);
         $this->assertSame('type1', $instance->type);
     }
+
+    public function testCreateMultipleTimes(): void
+    {
+        $nullClass1 = $this->nullObject->save(FakeTwoInterface::class, $this->scriptDir);
+        $nullClass2 = $this->nullObject->save(FakeTwoInterface::class, $this->scriptDir . '1');
+        $this->assertFileExists($this->scriptDir . '/Koriym_NullObject_FakeTwoInterfaceNull.php');
+        $this->assertFileExists($this->scriptDir . '1/Koriym_NullObject_FakeTwoInterfaceNull.php');
+    }
 }
