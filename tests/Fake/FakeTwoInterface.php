@@ -6,5 +6,5 @@ namespace Koriym\NullObject;
 
 interface FakeTwoInterface
 {
-    public function __invoke();
+    public function __invoke(): void;
 }
