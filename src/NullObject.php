@@ -84,15 +84,13 @@ EOT;
     public function save(string $interface, string $scriptDir): string
     {
         $nullClass = $interface . 'Null';
-        if (class_exists($nullClass, false)) {
-            return $nullClass;
-        }
-
         $generated = $this->generate($interface);
         $filePath = $generated->filePath($scriptDir);
         $this->filePutContents($filePath, $generated->phpCode());
         /** @psalm-suppress UnresolvableInclude */
-        require $filePath;
+        if (! class_exists($nullClass, false)) {
+            require $filePath;
+        }
 
         return $generated->class;
     }

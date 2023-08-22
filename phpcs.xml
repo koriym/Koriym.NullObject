@@ -19,6 +19,7 @@
     <file>src</file>
     <file>tests</file>
     <exclude-pattern>*/tmp/*</exclude-pattern>
+    <exclude-pattern>*/tmp1/*</exclude-pattern>
     <exclude-pattern>*/Fake/*</exclude-pattern>
 
     <!-- PSR12 Coding Standard -->
