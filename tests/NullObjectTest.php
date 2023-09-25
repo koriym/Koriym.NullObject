@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 use function assert;
+use function class_exists;
 use function dirname;
 use function interface_exists;
 use function spl_autoload_register;
@@ -127,9 +128,9 @@ class NullObjectTest extends TestCase
 
     public function testCreateMultipleTimes(): void
     {
-        $this->nullObject->save(FakeTwoInterface::class, $this->scriptDir);
-        $this->nullObject->save(FakeTwoInterface::class, $this->scriptDir . '1');
-        $this->assertFileExists($this->scriptDir . '/Koriym_NullObject_FakeTwoInterfaceNull.php');
-        $this->assertFileExists($this->scriptDir . '1/Koriym_NullObject_FakeTwoInterfaceNull.php');
+        $nullClassName1 = $this->nullObject->save(FakeChildInterface::class, $this->scriptDir);
+        $nullClassName2 = $this->nullObject->save(FakeChildInterface::class, $this->scriptDir . '1');
+        $this->assertTrue(class_exists($nullClassName1));
+        $this->assertTrue(class_exists($nullClassName2));
     }
 }

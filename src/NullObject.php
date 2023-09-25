@@ -16,6 +16,8 @@ use function class_exists;
 use function dirname;
 use function file;
 use function file_put_contents;
+use function filemtime;
+use function hash;
 use function implode;
 use function interface_exists;
 use function is_dir;
@@ -70,9 +72,9 @@ EOT;
 
         $classMeta = $this->getClassMeta($class);
 
-        $shortNullClassName = $class->getShortName() . 'Null';
+        $shortNullClassName = $this->getNullClassShortName($class);
         /** @var class-string $fqClassName */
-        $fqClassName = $class->getName() . 'Null';
+        $fqClassName = $this->getNullClassName($class);
         $code = sprintf(self::CLASS_TEMPLATE, $classMeta, $shortNullClassName, $interface, $this->getMethods($class));
 
         return new GeneratedCode($fqClassName, $code);
@@ -83,7 +85,7 @@ EOT;
      */
     public function save(string $interface, string $scriptDir): string
     {
-        $nullClass = $interface . 'Null';
+        $nullClass = $this->getNullClassName(new ReflectionClass($interface));
         $generated = $this->generate($interface);
         $filePath = $generated->filePath($scriptDir);
         $this->filePutContents($filePath, $generated->phpCode());
@@ -182,5 +184,35 @@ EOT;
         $shortName = (new ReflectionClass($class))->getShortName();
 
         return sprintf('#[%s(%s)]', $shortName, implode(', ', $argList));
+    }
+
+    /**
+     * @param ReflectionClass<object> $class
+     */
+    private function getNullClassName(ReflectionClass $class): string
+    {
+        return $class->getName() . $this->getTime($class) . 'aNull';
+    }
+
+    /**
+     * @param ReflectionClass<object> $class
+     */
+    private function getNullClassShortName(ReflectionClass $class): string
+    {
+        return $class->getShortName() . $this->getTime($class) . 'aNull';
+    }
+
+    /**
+     * @param ReflectionClass<object> $class
+     */
+    private function getTime(ReflectionClass $class): string
+    {
+        $time = 0;
+        while ($class instanceof ReflectionClass) {
+            $time .= filemtime($class->getFileName());
+            $class = $class->getParentClass();
+        }
+
+        return hash('crc32b', (string) $time);
     }
 }
