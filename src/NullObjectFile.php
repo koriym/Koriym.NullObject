@@ -51,10 +51,12 @@ final class NullObjectFile
             $this->scriptDir,
             str_replace('\\', '_', $this->className)
         );
-        if (file_exists($filePath)) {
+        if (! class_exists($this->className) && file_exists($filePath)) {
+            // @codeCoverageIgnoreStart
             require_once $filePath;
 
             return $this->className;
+            // @codeCoverageIgnoreEnd
         }
 
         return null;
