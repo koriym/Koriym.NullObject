@@ -4,7 +4,6 @@ namespace Koriym\NullObject\Annotation;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation

@@ -17,9 +17,7 @@ use function dirname;
 use function interface_exists;
 use function spl_autoload_register;
 
-/**
- * @template T of object
- */
+/** @template T of object */
 class NullObjectTest extends TestCase
 {
     /** @var NullObject<T> */
@@ -32,12 +30,11 @@ class NullObjectTest extends TestCase
     {
         $this->nullObject = new NullObject();
         $this->scriptDir = __DIR__ . '/tmp';
+
         parent::setUp();
     }
 
-    /**
-     * @return list<list<string>>
-     */
+    /** @return list<list<string>> */
     public function interfaceProvider(): array
     {
         return [
@@ -73,9 +70,7 @@ class NullObjectTest extends TestCase
         $this->testSave();
     }
 
-    /**
-     * @depends testSave
-     */
+    /** @depends testSave */
     public function testNullObjectAttribute(FakeNamedParamInterface $userAdd): void
     {
         $method = (new ReflectionMethod($userAdd, '__invoke'));
@@ -97,9 +92,7 @@ class NullObjectTest extends TestCase
         (new NullObject())->generate(DateTime::class);
     }
 
-    /**
-     * @requires PHP 8
-     */
+    /** @requires PHP 8.0 */
     public function testNamedParamsAttribute(): void
     {
         $nullClass = $this->nullObject->save(FakeNamedParamInterface::class, $this->scriptDir);
@@ -111,9 +104,7 @@ class NullObjectTest extends TestCase
         $this->assertSame('type1', $instance->type);
     }
 
-    /**
-     * @requires PHP 8
-     */
+    /** @requires PHP 8.0 */
     public function testOrderParamsAttribute(): void
     {
         $nullClass = $this->nullObject->save(FakeOrderParamInterface::class, $this->scriptDir);
