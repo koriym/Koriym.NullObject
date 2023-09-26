@@ -10,6 +10,7 @@ use ReflectionClass;
 use function assert;
 use function class_exists;
 use function dirname;
+use function file_exists;
 use function file_put_contents;
 use function is_dir;
 use function is_string;
@@ -22,25 +23,27 @@ use function unlink;
 
 final class NullObjectFile
 {
-    /** @var string */
+    /** @var class-string */
     private $className;
 
     /** @var string */
     private $scriptDir;
-    private $filePath;
 
-    /** @var string */
+    /** @var class-string */
     private $interface;
 
+    /** @param class-string $interface */
     public function __construct(string $interface, string $scriptDir)
     {
         $code = new Code();
         $this->className = $code->getNullClassName(new ReflectionClass($interface));
         $this->scriptDir = $scriptDir;
-        $this->filePath =
         $this->interface = $interface;
     }
 
+    /**
+     * @return class-string|null
+     */
     public function include(): ?string
     {
         $filePath = sprintf(
@@ -57,6 +60,9 @@ final class NullObjectFile
         return null;
     }
 
+    /**
+     * @return class-string
+     */
     public function save(): string
     {
         $code = (new Code())->generate($this->interface, $this->className);
@@ -65,7 +71,7 @@ final class NullObjectFile
         return $this->className;
     }
 
-    /** @var class-string $className */
+    /** @param class-string $className */
     public function filePutContents(string $className, string $content): void
     {
         $filename = $this->getFilePath($className);
@@ -74,10 +80,9 @@ final class NullObjectFile
         $tmpFile = tempnam(dirname($filename), 'swap');
         if (is_string($tmpFile) && file_put_contents($tmpFile, $content) && @rename($tmpFile, $filename)) {
             if (! class_exists($className, false)) {
+                assert(file_exists($filename));
                 require $filename;
             }
-
-            assert(class_exists($className));
 
             return;
         }

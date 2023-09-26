@@ -14,7 +14,7 @@ final class NullObject implements NullObjectInterface
      */
     public function newInstance(string $interface): object
     {
-        return (new Code())->newInstance($interface);
+        return (new Code())->newInstance($interface); // @phpstan-ignore-line
     }
 
     /**

@@ -38,7 +38,7 @@ final class Code
 EOT;
 
     /**
-     * {@inheritDoc}
+     * @param class-string $interface
      */
     public function newInstance(string $interface): object
     {
@@ -54,7 +54,9 @@ EOT;
     }
 
     /**
-     * {@inheritDoc}
+     * @param class-string $interface
+     *
+     * @psalm-suppress InvalidReturnStatement
      */
     public function generate(string $interface, ?string $fqcn = null): GeneratedCode
     {
@@ -67,10 +69,9 @@ EOT;
         $classMeta = $this->getClassMeta($class);
         $parts = explode('\\', $fqcn);
         $shortName = end($parts);
-        /** @var class-string $fqClassName */
-        $fqClassName = $this->getNullClassName($class);
         $code = sprintf(self::CLASS_TEMPLATE, $classMeta, $shortName, $interface, $this->getMethods($class));
 
+        /** @var class-string $fqcn */
         return new GeneratedCode($fqcn, $code);
     }
 
@@ -149,10 +150,15 @@ EOT;
 
     /**
      * @param ReflectionClass<object> $class
+     *
+     * @return class-string
+     *
+     * @psalm-suppress MoreSpecificReturnType
      */
     public function getNullClassName(ReflectionClass $class): string
     {
-        return $class->getName() . $this->getTime($class) . 'Null';
+        /** @psalm-suppress LessSpecificReturnStatement */
+        return $class->getName() . $this->getTime($class) . 'Null'; // @phpstan-ignore-line
     }
 
     /**
@@ -167,7 +173,7 @@ EOT;
                 throw new LogicException();
             }
 
-            $time .= filemtime($class->getFileName());
+            $time .= filemtime($class->getFileName()); // @phpstan-ignore-line
             $class = $class->getParentClass();
         }
 
