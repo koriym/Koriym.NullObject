@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
-use function sprintf;
-use function str_replace;
-
 final class GeneratedCode
 {
     /** @var class-string */
@@ -22,19 +19,5 @@ final class GeneratedCode
     {
         $this->class = $class;
         $this->code = $code;
-    }
-
-    public function filePath(string $scriptDir): string
-    {
-        return sprintf(
-            '%s/%s.php',
-            $scriptDir,
-            str_replace('\\', '_', $this->class)
-        );
-    }
-
-    public function phpCode(): string
-    {
-        return sprintf("<?php\n" . $this->code);
     }
 }
