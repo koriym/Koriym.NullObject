@@ -98,7 +98,7 @@ class NullObjectTest extends TestCase
     }
 
     /**
-     * @required PHP8
+     * @requires PHP 8
      */
     public function testNamedParamsAttribute(): void
     {
@@ -112,7 +112,7 @@ class NullObjectTest extends TestCase
     }
 
     /**
-     * @required PHP8
+     * @requires PHP 8
      */
     public function testOrderParamsAttribute(): void
     {

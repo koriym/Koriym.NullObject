@@ -34,7 +34,6 @@
         "files": ["tests/Fake/FakeNoNsInterface.php"]
     },
     "scripts": {
-        "setup": "php bin/setup.php",
         "test": "phpunit",
         "coverage": "php -dzend_extension=xdebug.so -dxdebug.mode=coverage ./vendor/bin/phpunit --coverage-text --coverage-html=build/coverage",
         "pcov": "php -dextension=pcov.so -d pcov.enabled=1 ./vendor/bin/phpunit --coverage-text --coverage-html=build/coverage  --coverage-clover=coverage.xml",
