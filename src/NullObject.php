@@ -33,7 +33,9 @@ final class NullObject implements NullObjectInterface
         $nullFile = new NullObjectFile($interface, $scriptDir);
         $maybeClassName = $nullFile->include();
         if ($maybeClassName) {
+            // @codeCoverageIgnoreStart
             return $maybeClassName;
+            // @codeCoverageIgnoreEnd
         }
 
         return $nullFile->save();
