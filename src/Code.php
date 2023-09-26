@@ -17,7 +17,6 @@ use function file;
 use function filemtime;
 use function hash;
 use function implode;
-use function interface_exists;
 use function is_int;
 use function is_string;
 use function sprintf;
@@ -62,9 +61,6 @@ EOT;
     {
         $fqcn = $fqcn ?: $this->getNullClassName(new ReflectionClass($interface));
         $class = new ReflectionClass($interface);
-        if (! interface_exists($class->getName())) {
-            throw new LogicException($class->getName());
-        }
 
         $classMeta = $this->getClassMeta($class);
         $parts = explode('\\', $fqcn);
