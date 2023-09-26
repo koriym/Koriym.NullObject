@@ -12,9 +12,7 @@ final class GeneratedCode
     /** @var string */
     public $code;
 
-    /**
-     * @param class-string $class
-     */
+    /** @param class-string $class */
     public function __construct(string $class, string $code)
     {
         $this->class = $class;

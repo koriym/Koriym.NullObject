@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Koriym\NullObject;
 
-/**
- * @template T of object
- */
+/** @template T of object */
 final class NullObject implements NullObjectInterface
 {
     /**

@@ -41,9 +41,7 @@ final class NullObjectFile
         $this->interface = $interface;
     }
 
-    /**
-     * @return class-string|null
-     */
+    /** @return class-string|null */
     public function include(): ?string
     {
         $filePath = sprintf(
@@ -53,8 +51,10 @@ final class NullObjectFile
         );
         if (! class_exists($this->className) && file_exists($filePath)) {
             // @codeCoverageIgnoreStart
+            /** @psalm-suppress UnresolvableInclude */
             require_once $filePath;
 
+            /** @psalm-suppress MixedReturnStatement */
             return $this->className;
             // @codeCoverageIgnoreEnd
         }
@@ -62,9 +62,7 @@ final class NullObjectFile
         return null;
     }
 
-    /**
-     * @return class-string
-     */
+    /** @return class-string */
     public function save(): string
     {
         $code = (new Code())->generate($this->interface, $this->className);

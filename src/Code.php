@@ -25,20 +25,16 @@ use function str_replace;
 use const PHP_EOL;
 use const PHP_VERSION_ID;
 
-/**
- * @template T of object
- */
+/** @template T of object */
 final class Code
 {
-    private const CLASS_TEMPLATE = <<<EOT
+    private const CLASS_TEMPLATE = <<<'EOT'
 %sclass %s implements \%s
 {
 %s}
 EOT;
 
-    /**
-     * @param class-string $interface
-     */
+    /** @param class-string $interface */
     public function newInstance(string $interface): object
     {
         $generated = $this->generate($interface);
@@ -71,9 +67,7 @@ EOT;
         return new GeneratedCode($fqcn, $code);
     }
 
-    /**
-     * @param ReflectionClass<object> $class
-     */
+    /** @param ReflectionClass<object> $class */
     private function getClassMeta(ReflectionClass $class): string
     {
         $file = (array) file((string) $class->getFileName());
@@ -82,9 +76,7 @@ EOT;
         return implode('', $fileMeta);
     }
 
-    /**
-     * @param ReflectionClass<object> $class
-     */
+    /** @param ReflectionClass<object> $class */
     private function getMethods(ReflectionClass $class): string
     {
         $methods = $class->getMethods();
@@ -106,9 +98,7 @@ EOT;
         return sprintf("    %s\n%s", $method->getDocComment(), $attr);
     }
 
-    /**
-     * @psalm-suppress MixedAssignment
-     */
+    /** @psalm-suppress MixedAssignment */
     private function getAttributes(ReflectionMethod $method): string
     {
         $attrs = $method->getAttributes();
@@ -157,9 +147,7 @@ EOT;
         return $class->getName() . $this->getTime($class) . 'Null'; // @phpstan-ignore-line
     }
 
-    /**
-     * @param ReflectionClass<object> $class
-     */
+    /** @param ReflectionClass<object> $class */
     private function getTime(ReflectionClass $class): string
     {
         $time = 0;
