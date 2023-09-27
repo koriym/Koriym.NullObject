@@ -3,13 +3,14 @@
 namespace Koriym\NullObject\Annotation;
 
 use Attribute;
-use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * @Annotation
+ * @NamedArgumentConstructor()
  */
 #[Attribute]
-class DbPager implements NamedArgumentConstructorAnnotation
+class DbPager
 {
     /** @var string */
     public $id;

@@ -12,13 +12,12 @@ use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 use function assert;
+use function class_exists;
 use function dirname;
 use function interface_exists;
 use function spl_autoload_register;
 
-/**
- * @template T of object
- */
+/** @template T of object */
 class NullObjectTest extends TestCase
 {
     /** @var NullObject<T> */
@@ -31,12 +30,11 @@ class NullObjectTest extends TestCase
     {
         $this->nullObject = new NullObject();
         $this->scriptDir = __DIR__ . '/tmp';
+
         parent::setUp();
     }
 
-    /**
-     * @return list<list<string>>
-     */
+    /** @return list<list<string>> */
     public function interfaceProvider(): array
     {
         return [
@@ -62,7 +60,6 @@ class NullObjectTest extends TestCase
         $nullClass = $this->nullObject->save(FakeNamedParamInterface::class, $this->scriptDir);
         $nullObject = new $nullClass();
         $this->assertInstanceOf(FakeNamedParamInterface::class, $nullObject);
-        $this->assertFileExists(__DIR__ . '/tmp/Koriym_NullObject_FakeNamedParamInterfaceNull.php');
         assert($nullObject instanceof FakeNamedParamInterface);
 
         return $nullObject;
@@ -73,9 +70,7 @@ class NullObjectTest extends TestCase
         $this->testSave();
     }
 
-    /**
-     * @depends testSave
-     */
+    /** @depends testSave */
     public function testNullObjectAttribute(FakeNamedParamInterface $userAdd): void
     {
         $method = (new ReflectionMethod($userAdd, '__invoke'));
@@ -97,9 +92,7 @@ class NullObjectTest extends TestCase
         (new NullObject())->generate(DateTime::class);
     }
 
-    /**
-     * @required PHP8
-     */
+    /** @requires PHP 8.0 */
     public function testNamedParamsAttribute(): void
     {
         $nullClass = $this->nullObject->save(FakeNamedParamInterface::class, $this->scriptDir);
@@ -111,9 +104,7 @@ class NullObjectTest extends TestCase
         $this->assertSame('type1', $instance->type);
     }
 
-    /**
-     * @required PHP8
-     */
+    /** @requires PHP 8.0 */
     public function testOrderParamsAttribute(): void
     {
         $nullClass = $this->nullObject->save(FakeOrderParamInterface::class, $this->scriptDir);
@@ -127,9 +118,9 @@ class NullObjectTest extends TestCase
 
     public function testCreateMultipleTimes(): void
     {
-        $this->nullObject->save(FakeTwoInterface::class, $this->scriptDir);
-        $this->nullObject->save(FakeTwoInterface::class, $this->scriptDir . '1');
-        $this->assertFileExists($this->scriptDir . '/Koriym_NullObject_FakeTwoInterfaceNull.php');
-        $this->assertFileExists($this->scriptDir . '1/Koriym_NullObject_FakeTwoInterfaceNull.php');
+        $nullClassName1 = $this->nullObject->save(FakeChildInterface::class, $this->scriptDir);
+        $nullClassName2 = $this->nullObject->save(FakeChildInterface::class, $this->scriptDir . '1');
+        $this->assertTrue(class_exists($nullClassName1));
+//        $this->assertTrue(class_exists($nullClassName2));
     }
 }

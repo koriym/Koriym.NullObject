@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Koriym\NullObject\Code;
 use Koriym\NullObject\NullObject;
 
 return static function (string $className): void {
@@ -14,7 +15,6 @@ return static function (string $className): void {
     if (! interface_exists($interfaceName)) {
         return;
     }
-    $nullObject = new NullObject();
-    $generated = $nullObject->generate($interfaceName);
+    $generated = (new Code())->generate($interfaceName, $className);
     eval($generated->code);
 };
