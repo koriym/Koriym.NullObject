@@ -61,3 +61,7 @@ $nullClass = FooInterface::class . 'Null'; // add Null suffix to the interface
 $foo = new $nullClass;  // instantiate a NullObject
 assert($foo instanceof FooInterface);
 ```
+
+## Note
+
+Inherited interfaces are not yet supported.
