@@ -49,17 +49,19 @@ final class NullObjectFile
             $this->scriptDir,
             str_replace('\\', '_', $this->className)
         );
-        if (! class_exists($this->className) && file_exists($filePath)) {
+
+        if (! file_exists($filePath)) {
+            return null;
+        }
+
+        if (! class_exists($this->className)) {
             // @codeCoverageIgnoreStart
             /** @psalm-suppress UnresolvableInclude */
             require_once $filePath;
-
-            /** @psalm-suppress MixedReturnStatement */
-            return $this->className;
             // @codeCoverageIgnoreEnd
         }
 
-        return null;
+        return $this->className;
     }
 
     /** @return class-string */
