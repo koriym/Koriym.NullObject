@@ -164,7 +164,7 @@ EOT;
 
             $mtime = filemtime($fileName);
             if ($mtime === false) {
-                throw new LogicException(); // @codeCoverageIgnore
+                throw new LogicException(sprintf('filemtime failed for %s', $fileName)); // @codeCoverageIgnore
             }
 
             $time .= (string) $mtime;
