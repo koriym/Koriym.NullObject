@@ -55,7 +55,7 @@ EOT;
      */
     public function generate(string $interface, ?string $fqcn = null): GeneratedCode
     {
-        $fqcn = $fqcn ?: $this->getNullClassName(new ReflectionClass($interface));
+        $fqcn = $fqcn ?? $this->getNullClassName(new ReflectionClass($interface));
         $class = new ReflectionClass($interface);
 
         $classMeta = $this->getClassMeta($class);
@@ -147,20 +147,26 @@ EOT;
         return $class->getName() . $this->getTime($class) . 'Null'; // @phpstan-ignore-line
     }
 
-    /** @param ReflectionClass<object> $class */
+    /**
+     * @param ReflectionClass<object> $class
+     *
+     * @psalm-suppress InvalidFalsableReturnType
+     * @psalm-suppress FalsableReturnStatement
+     */
     private function getTime(ReflectionClass $class): string
     {
-        $time = 0;
+        $time = '0';
         while ($class instanceof ReflectionClass) {
             $fileName = $class->getFileName();
             if ($fileName === false) {
                 throw new LogicException();
             }
 
-            $time .= filemtime($class->getFileName()); // @phpstan-ignore-line
+            $mtime = filemtime($fileName);
+            $time .= (string) ($mtime !== false ? $mtime : 0);
             $class = $class->getParentClass();
         }
 
-        return hash('crc32b', (string) $time);
+        return hash('crc32b', $time);
     }
 }

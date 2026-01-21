@@ -73,7 +73,7 @@ class NullObjectTest extends TestCase
     /** @depends testSave */
     public function testNullObjectAttribute(FakeNamedParamInterface $userAdd): void
     {
-        $method = (new ReflectionMethod($userAdd, '__invoke'));
+        $method = new ReflectionMethod($userAdd, '__invoke');
         $anotation = (new AnnotationReader())->getMethodAnnotation($method, DbPager::class);
         $this->assertInstanceOf(DbPager::class, $anotation);
     }

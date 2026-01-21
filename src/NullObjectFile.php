@@ -41,7 +41,12 @@ final class NullObjectFile
         $this->interface = $interface;
     }
 
-    /** @return class-string|null */
+    /**
+     * @return class-string|null
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     */
     public function include(): ?string
     {
         $filePath = sprintf(
@@ -80,7 +85,7 @@ final class NullObjectFile
         $dir = dirname($filename);
         ! is_dir($dir) && ! mkdir($dir, 0777, true) && ! is_dir($dir);
         $tmpFile = tempnam(dirname($filename), 'swap');
-        if (is_string($tmpFile) && file_put_contents($tmpFile, $content) && @rename($tmpFile, $filename)) {
+        if (is_string($tmpFile) && file_put_contents($tmpFile, $content) !== false && @rename($tmpFile, $filename)) {
             if (! class_exists($className, false)) {
                 assert(file_exists($filename));
                 require $filename;
