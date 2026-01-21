@@ -163,11 +163,7 @@ EOT;
             }
 
             $mtime = filemtime($fileName);
-            if ($mtime === false) {
-                throw new LogicException(sprintf('filemtime failed for %s', $fileName)); // @codeCoverageIgnore
-            }
-
-            $time .= (string) $mtime;
+            $time .= (string) ($mtime !== false ? $mtime : 0);
             $class = $class->getParentClass();
         }
 
